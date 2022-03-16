@@ -1,43 +1,41 @@
-pipeline{
-
-    agent any
-
-// uncomment the following lines by removing /* and */ to enable. agent notify which jenkins instance is being used
-    tools{
-       nodejs 'nodejs' 
+pipeline {
+  agent any
+  stages {
+    stage('compile') {
+      steps {
+        echo 'this is the first job compile'
+        sh 'npm install'
+      }
     }
-   
 
-    stages{
-        stage('compile'){
-            steps{
-                echo 'this is the first job compile'
-                sh 'npm install'
-                //sleep 4
-            }
-        }
-        stage('test'){
-            steps{
-                echo 'this is the second job test'
-                sh 'npm test'
-                //sleep 9
-            }
-        }
-		
-        stage('package'){
-            steps{
-                echo 'this is the third job package'
-                sh 'npm run package'
-                //sleep 7
-            }
-        }
+    stage('test') {
+      steps {
+        echo 'this is the second job test'
+        sh 'npm test'
+      }
     }
-    
-    post{
-        always{
-            echo 'this is first pipeline by code...'
-        }
-        
+
+    stage('package') {
+      steps {
+        echo 'this is the third job package'
+        sh 'npm run package'
+      }
     }
-    
+
+    stage('archive') {
+      steps {
+        archiveArtifacts '**/distribution/*.zip'
+      }
+    }
+
+  }
+  tools {
+    nodejs 'nodejs'
+  }
+  post {
+    always {
+      echo 'this is first pipeline by code...'
+    }
+
+  }
 }
